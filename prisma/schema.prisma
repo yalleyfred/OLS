@@ -1,0 +1,141 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique
+  email     String    @unique
+  password  String
+  role      Role      @default(USER)     
+  Profile   Profile?
+  rating    Rating?
+  readingHistories Reading_History?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@map("users")
+}
+
+model Profile {
+  id               Int      @id @default(autoincrement())
+  firstName        String
+  lastName         String
+  address          String
+  phone            String
+  registrationDate String
+  accountStatus    Boolean @default(true)
+  userId           Int      @unique
+  user             User     @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@map("profiles")
+}
+
+
+model Book {
+  id Int @id @default(autoincrement())
+  title String @unique
+  description String @db.Text
+  publicationDate String
+  isbn String
+  language String
+  coverImage String
+  fileUrl String
+  availabilityStatus Boolean @default(true)
+  author Author?
+  publisher Publisher?
+  genre Genre?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@map("books")
+}
+
+model Author {
+  id  Int @id @default(autoincrement())
+  name String
+  nationality String
+  dateOfBirth String
+  dateOfDeath String?
+  biography String? @db.Text
+  bookId Int @unique
+  book Book @relation(fields: [bookId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@map("authors")
+}
+
+model Publisher {
+  id Int @id @default(autoincrement())
+  name String
+  address String
+  email String
+  phone String
+  websiteUrl String?
+  bookId Int @unique
+  book Book @relation(fields: [bookId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@map("publishers")
+}
+
+model Genre {
+  id Int @id @default(autoincrement())
+  name String
+  description String
+  bookId Int @unique
+  book Book @relation(fields: [bookId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@map("genres")
+}
+
+model Rating {
+  id Int @id @default(autoincrement())
+  value Int 
+  review String @db.Text
+  userId Int @unique
+  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@map("ratings")
+}
+
+model Reading_History {
+  id Int @id @default(autoincrement())
+  startDate String
+  endDate String
+  userId Int @unique
+  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@map("reading_histories")
+}
