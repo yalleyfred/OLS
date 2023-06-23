@@ -14,7 +14,7 @@ export class BooksService {
             const user = await this.prisma.user.findFirst({
                 where: {id: adminId, deletedAt: null}
             });
-    
+            console.log("Ma meeee")
             if(user.role !== 'ADMIN') throw new HttpException('Access denied', 401);
             const existingBook = await this.prisma.book.findFirst({
                 where: {
